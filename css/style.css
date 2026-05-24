@@ -1,8 +1,10 @@
 body {
-  font-family: 'JetBrains Mono', monospace;
-  background-color: #f8f9fa;
-  color: #212529;
+  font-family: 'Space Grotesk', sans-serif;
   padding-top: 70px;
+
+  background-color: #f8f9fa; /* Base light mode background tint */
+  background-image: radial-gradient(#dee2e6 1px, transparent 1.5px);
+  background-size: 24px 24px;
 }
 
 h1, h2, h3, h4, h5, h6, .navbar-brand {
@@ -25,4 +27,20 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 
 .leading-relaxed {
   line-height: 1.7;
+}
+
+.icon-service {
+  color: #cb95fd;
+}
+
+.icon-game {
+  color: #2cb675;
+}
+
+.icon-ecommerce {
+  color: #ffd75e;
+}
+
+.icon-analytics {
+  color: #7ed6e7;
 }
