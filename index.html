@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aidan Lam - Portfolio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+
+  <link href="css/style.css" rel="stylesheet" />
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold text-dark" href="#about">Aidan Lam</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav gap-2">
+          <li class="nav-item"><a class="nav-link text-secondary" href="#about">About</a></li>
+          <li class="nav-item"><a class="nav-link text-secondary" href="#process">Process</a></li>
+          <li class="nav-item"><a class="nav-link text-secondary" href="#designs">Future Work</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container style-main">
+
+    <section id="about" class="py-5 border-bottom">
+      <div class="row align-items-center py-4">
+        <div class="col-md-8">
+          <h1 class="display-4 fw-bold text-dark mb-3">Aidan Lam</h1>
+          <p class="lead text-muted mb-4">
+            Software Engineering Student at the University of Ottawa.
+          </p>
+          <div class="d-flex gap-3">
+            <a href="mailto:aidanlam02@gmail.com" class="btn btn-dark">Contact Me</a>
+            <a href="#designs" class="btn btn-outline-secondary">View My Work</a>
+          </div>
+        </div>
+        <div class="col-md-4 text-center d-none d-md-block">
+          <div class="bg-light border rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 180px; height: 180px;">
+            <i class="bi bi-person-fill text-secondary display-1"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="process" class="py-5 border-bottom">
+      <div class="py-4">
+        <h2 class="fw-bold text-dark mb-4">Design Philosophy & Process</h2>
+        <div class="row g-4">
+          <div class="col-md-6">
+            <p class="text-secondary leading-relaxed">
+              This portfolio serves as an archive for the user interfaces I will design throughout the <strong>SEG3125 (Analysis and Design of User Interfaces)</strong> course at the University of Ottawa. My objective this semester is to explore the different spaces of UI/UX design, including video games, business services, e-commerce platforms and data analytics
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="text-secondary leading-relaxed">
+              I rely on empirical frameworks such as the <strong>Nielsen Norman Group (NN/g) Articles</strong> regarding visual hierarchy, error prevention, and user control, alongside standard platform-specific design patterns.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="designs" class="py-5">
+      <div class="py-4">
+        <h2 class="fw-bold text-dark mb-2">Upcoming Project Case Studies</h2>
+        <p class="text-muted mb-5">Interactive applications and platforms to be developed throughout the semester.</p>
+        
+        <div class="row g-4">
+          
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border bg-white shadow-sm">
+              <div class="card-body d-flex flex-column justify-content-between p-4">
+                <div>
+                  <div class="text-primary mb-3"><i class="bi bi-scissors fs-3"></i></div>
+                  <h4 class="card-title fw-bold text-dark fs-5">Service Website</h4>
+                  <p class="card-text text-muted small mt-2">
+                    A professional service interface optimizing client booking workflows and visual hierarchy.
+                  </p>
+                </div>
+                <div class="mt-4">
+                  <span class="badge bg-light text-secondary border mb-3">Case Study 01</span>
+                  <a href="design1.html" class="btn btn-sm btn-outline-dark d-block">Coming Soon</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border bg-white shadow-sm">
+              <div class="card-body d-flex flex-column justify-content-between p-4">
+                <div>
+                  <div class="text-success mb-3"><i class="bi bi-grid-3x3-gap-fill fs-3"></i></div>
+                  <h4 class="card-title fw-bold text-dark fs-5">Memory Game</h4>
+                  <p class="card-text text-muted small mt-2">
+                    An interactive jeu de mémoire analyzing state feedback, responsiveness, and game UI constraints.
+                  </p>
+                </div>
+                <div class="mt-4">
+                  <span class="badge bg-light text-secondary border mb-3">Case Study 02</span>
+                  <a href="design2.html" class="btn btn-sm btn-outline-dark d-block">Coming Soon</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border bg-white shadow-sm">
+              <div class="card-body d-flex flex-column justify-content-between p-4">
+                <div>
+                  <div class="text-warning mb-3"><i class="bi bi-bag-heart-fill fs-3"></i></div>
+                  <h4 class="card-title fw-bold text-dark fs-5">E-Commerce</h4>
+                  <p class="card-text text-muted small mt-2">
+                    A multi-page online shopping storefront evaluating complex search navigation and checkout flows.
+                  </p>
+                </div>
+                <div class="mt-4">
+                  <span class="badge bg-light text-secondary border mb-3">Case Study 03</span>
+                  <a href="design3.html" class="btn btn-sm btn-outline-dark d-block">Coming Soon</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6 col-lg-3">
+            <div class="card h-100 border bg-white shadow-sm">
+              <div class="card-body d-flex flex-column justify-content-between p-4">
+                <div>
+                  <div class="text-info mb-3"><i class="bi bi-bar-chart-line-fill fs-3"></i></div>
+                  <h4 class="card-title fw-bold text-dark fs-5">Analytics Dashboard</h4>
+                  <p class="card-text text-muted small mt-2">
+                    A complex system interface focusing on data visualization paradigms and density distribution.
+                  </p>
+                </div>
+                <div class="mt-4">
+                  <span class="badge bg-light text-secondary border mb-3">Case Study 04</span>
+                  <a href="design4.html" class="btn btn-sm btn-outline-dark d-block">Coming Soon</a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="bg-white border-top py-4 mt-5">
+    <div class="container d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3 text-muted small">
+      <div>
+        <span class="fw-semibold text-dark">Aidan Lam</span> · SEG3125 · University of Ottawa
+      </div>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

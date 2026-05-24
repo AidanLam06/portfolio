@@ -1,0 +1,28 @@
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #f8f9fa;
+  color: #212529;
+  padding-top: 70px;
+}
+
+h1, h2, h3, h4, h5, h6, .navbar-brand {
+  font-family: 'Syne', sans-serif;
+  letter-spacing: -0.02em;
+}
+
+.style-main {
+  max-width: 1140px;
+}
+
+.card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08) !important;
+}
+
+.leading-relaxed {
+  line-height: 1.7;
+}
