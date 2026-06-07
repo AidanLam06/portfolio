@@ -44,3 +44,18 @@ h1, h2, h3, h4, h5, h6, .navbar-brand {
 .icon-analytics {
   color: #7ed6e7;
 }
+
+/* Optimization for 1440p displays and above */
+@media (min-width: 1400px) {
+  .style-main {
+    max-width: 1600px;
+  }
+
+  body {
+    font-size: 1.1rem;
+  }
+
+  .display-4 {
+    font-size: 4.5rem;
+  }
+}

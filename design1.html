@@ -160,6 +160,18 @@
       color: #f1f5f9 !important;
       border-color: #475569 !important;
     }
+
+    @media (min-width: 1400px) {
+      body {
+        zoom: 125%; 
+      }
+
+      .navbar.fixed-top {
+        width: 100%;
+        left: 0;
+        right: 0;
+      }
+    }
   </style>
 </head>
 <body>
@@ -172,7 +184,7 @@
   <script type="text/babel">
     const { useState, useRef } = React;
 
-    /* ── Data ─────────────────────────────────────────── */
+    /* -- Data ----------------------------------------- */
 
     const COVERED_AREAS = [
       { fsa: 'K1A', name: 'Parliament Hill / Centretown Core' },
@@ -204,7 +216,7 @@
 
     const parseFsa = raw => raw.trim().toUpperCase().replace(/\s/g, '').slice(0, 3);
 
-    /* ── Navbar ───────────────────────────────────────── */
+    /* --- Navbar ----------------------------------------- */
 
     function Nav({ areaRef, bookRef }) {
       const scroll = ref => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -250,7 +262,7 @@
       );
     }
 
-    /* ── Hero ─────────────────────────────────────────── */
+    /* --- Hero ----------------------------------------- */
 
     function Hero({ areaRef, bookRef }) {
       const scroll = ref => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -282,7 +294,7 @@
       );
     }
 
-    /* ── Services ─────────────────────────────────────── */
+    /* --- Services ----------------------------------------- */
 
     function Services() {
       return (
@@ -315,7 +327,7 @@
       );
     }
 
-    /* ── Area Checker ─────────────────────────────────── */
+    /* --- Area Checker ---------------------------------- */
 
     function AreaChecker({ sectionRef, bookRef }) {
       const [input,  setInput]  = useState('');
@@ -401,7 +413,7 @@
       );
     }
 
-    /* ── Booking Form ─────────────────────────────────── */
+    /* --- Booking Form -------------------------------------- */
 
     const EMPTY_FORM = { name: '', phone: '', address: '', postal: '', service: '', stories: '', date: '', time: '', notes: '' };
 
@@ -629,7 +641,7 @@
       );
     }
 
-    /* ── Footer ───────────────────────────────────────── */
+    /* --- Footer --------------------------------------- */
 
     function Footer() {
       return (
@@ -649,7 +661,7 @@
       );
     }
 
-    /* ── App ──────────────────────────────────────────── */
+    /* --- App ----------------------------------------- */
 
     function App() {
       const areaRef = useRef(null);
@@ -663,7 +675,6 @@
 
       return (
         <>
-          {/* Floating Theme Toggle Button for Grading/Screenshots */}
           <button 
             onClick={toggleTheme} 
             className="btn btn-sm btn-warning fixed-bottom m-3" 
