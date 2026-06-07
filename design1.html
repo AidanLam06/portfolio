@@ -133,6 +133,33 @@
     }
     .summary-row:last-child { border-bottom: none; }
     .summary-row i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
+
+    /* Alternative Theme Styles */
+    body.alt-theme {
+      background-color: #0f172a !important;
+      background-image: radial-gradient(#334155 1px, transparent 1.5px) !important;
+      color: #f1f5f9 !important;
+    }
+    .alt-theme .navbar, .alt-theme .card, .alt-theme .svc-btn, .alt-theme footer {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    .alt-theme .text-dark, .alt-theme h1, .alt-theme h2, .alt-theme h3, .alt-theme h4, .alt-theme h5, .alt-theme .navbar-brand {
+      color: #f8fafc !important;
+    }
+    .alt-theme .text-muted, .alt-theme .text-secondary {
+      color: #94a3b8 !important;
+    }
+    .alt-theme .btn-dark {
+      background-color: #cb95fd !important;
+      color: #0f172a !important;
+      border: none !important;
+    }
+    .alt-theme .btn-outline-secondary {
+      color: #f1f5f9 !important;
+      border-color: #475569 !important;
+    }
   </style>
 </head>
 <body>
@@ -627,8 +654,24 @@
     function App() {
       const areaRef = useRef(null);
       const bookRef = useRef(null);
+      const [isAltTheme, setIsAltTheme] = useState(false);
+
+      const toggleTheme = () => {
+        setIsAltTheme(!isAltTheme);
+        document.body.classList.toggle('alt-theme');
+      };
+
       return (
         <>
+          {/* Floating Theme Toggle Button for Grading/Screenshots */}
+          <button 
+            onClick={toggleTheme} 
+            className="btn btn-sm btn-warning fixed-bottom m-3" 
+            style={{ zIndex: 2000, right: 0, left: 'auto' }}
+          >
+            <i className="bi bi-palette me-1"></i> Switch Design Theme
+          </button>
+
           <Nav areaRef={areaRef} bookRef={bookRef} />
           <main>
             <Hero areaRef={areaRef} bookRef={bookRef} />
