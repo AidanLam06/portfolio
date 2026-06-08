@@ -3,47 +3,700 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design 01 - Service Site | Aidan Lam</title>
+  <title>ClearPane — Window Cleaning Ottawa</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300..700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
   <link href="css/style.css" rel="stylesheet" />
+
   <style>
-    .cs-icon { background: rgba(167,139,250,0.15); border: 1px solid rgba(167,139,250,0.3); color: #cb95fd; }
-    .cs-progress-fill { background: linear-gradient(90deg, #cb95fd, #7c3aed); }
-    .cs-back:hover { color: #cb95fd; }
+    :root {
+      --accent: #cb95fd;
+      --accent-bg: rgba(203, 149, 253, 0.1);
+      --accent-border: rgba(203, 149, 253, 0.28);
+    }
+
+    section { scroll-margin-top: 72px; }
+
+    .cp-brand {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .section-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      letter-spacing: -0.02em;
+    }
+
+    .icon-accent { color: var(--accent); font-size: 1.4rem; }
+
+    /* Area pills */
+    .area-pill {
+      font-size: 0.78rem;
+      padding: 5px 12px;
+      border-radius: 100px;
+      background: #fff;
+      border: 1px solid #dee2e6;
+      color: #495057;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .area-pill .dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    /* Form focus */
+    .form-control:focus, .form-select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 0.2rem rgba(203, 149, 253, 0.2);
+    }
+
+    /* Service toggle buttons */
+    .svc-btn {
+      border: 1px solid #dee2e6;
+      background: #fff;
+      border-radius: 8px;
+      padding: 14px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+      text-align: left;
+      width: 100%;
+    }
+    .svc-btn.active {
+      border-color: var(--accent);
+      background: var(--accent-bg);
+    }
+    .svc-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    /* Result banners */
+    .banner-ok {
+      background: rgba(25, 135, 84, 0.08);
+      border: 1px solid rgba(25, 135, 84, 0.3);
+      color: #198754;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+    }
+    .banner-no {
+      background: rgba(220, 53, 69, 0.08);
+      border: 1px solid rgba(220, 53, 69, 0.3);
+      color: #dc3545;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+    }
+    .banner-warn {
+      background: rgba(255, 193, 7, 0.1);
+      border: 1px solid rgba(255, 193, 7, 0.4);
+      color: #856404;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 0.9rem;
+    }
+
+    /* Confirmation */
+    .confirm-circle {
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      background: rgba(25, 135, 84, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.5rem;
+    }
+    .summary-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 8px 0;
+      border-bottom: 1px solid #f0f0f0;
+      font-size: 0.875rem;
+      color: #495057;
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row i { color: var(--accent); margin-top: 2px; flex-shrink: 0; }
+
+    /* Alternative Theme Styles */
+    body.alt-theme {
+      background-color: #0f172a !important;
+      background-image: radial-gradient(#334155 1px, transparent 1.5px) !important;
+      color: #f1f5f9 !important;
+    }
+    .alt-theme .navbar, .alt-theme .card, .alt-theme .svc-btn, .alt-theme footer {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+      color: #f1f5f9 !important;
+    }
+    .alt-theme .text-dark, .alt-theme h1, .alt-theme h2, .alt-theme h3, .alt-theme h4, .alt-theme h5, .alt-theme .navbar-brand {
+      color: #f8fafc !important;
+    }
+    .alt-theme .text-muted, .alt-theme .text-secondary {
+      color: #94a3b8 !important;
+    }
+    .alt-theme .btn-dark {
+      background-color: #cb95fd !important;
+      color: #0f172a !important;
+      border: none !important;
+    }
+    .alt-theme .btn-outline-secondary {
+      color: #f1f5f9 !important;
+      border-color: #475569 !important;
+    }
+
+    @media (min-width: 1400px) {
+      body {
+        zoom: 125%; 
+      }
+
+      .navbar.fixed-top {
+        width: 100%;
+        left: 0;
+        right: 0;
+      }
+    }
   </style>
 </head>
 <body>
-  <div class="coming-soon-page">
-    <a href="index.html" class="cs-back btn btn-ghost mb-5 position-relative" style="z-index:1">
-      <i class="bi bi-arrow-left me-1"></i> Back to Portfolio
-    </a>
+  <div id="root"></div>
 
-    <div class="cs-icon"><i class="bi bi-scissors"></i></div>
+  <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <p class="eyebrow justify-content-center position-relative" style="z-index:1;color:#cb95fd">
-      <span class="eyebrow-dot" style="background:#cb95fd"></span>DESIGN 01
-    </p>
+  <script type="text/babel">
+    const { useState, useRef } = React;
 
-    <h1 class="cs-title">Service Site</h1>
+    /* -- Data ----------------------------------------- */
 
-    <p class="cs-subtitle">
-      A professional local service website - showcasing UI/UX design for a real-world business context.
-      This case study is currently in progress.
-    </p>
+    const COVERED_AREAS = [
+      { fsa: 'K1A', name: 'Parliament Hill / Centretown Core' },
+      { fsa: 'K1G', name: 'Alta Vista / South Keys' },
+      { fsa: 'K1H', name: 'Alta Vista / Heron Gate' },
+      { fsa: 'K1J', name: 'Gloucester / Beacon Hill' },
+      { fsa: 'K1K', name: 'Vanier' },
+      { fsa: 'K1L', name: 'Lowertown / Vanier East' },
+      { fsa: 'K1M', name: 'Rockcliffe Park / Manor Park' },
+      { fsa: 'K1N', name: 'Sandy Hill / Byward Market' },
+      { fsa: 'K1P', name: 'Downtown Ottawa' },
+      { fsa: 'K1R', name: 'Centretown West' },
+      { fsa: 'K1S', name: 'The Glebe / Old Ottawa South' },
+      { fsa: 'K1T', name: 'Hunt Club' },
+      { fsa: 'K1Y', name: 'Westboro / Hintonburg' },
+      { fsa: 'K1Z', name: 'Westboro / Hampton Park' },
+    ];
+    const COVERED_SET = new Set(COVERED_AREAS.map(a => a.fsa));
 
-    <div class="cs-progress position-relative" style="z-index:1">
-      <div class="cs-progress-fill"></div>
-    </div>
+    const SERVICES = [
+      { id: 'exterior', label: 'Exterior Only',        price: 'from $80',  icon: 'bi-window',     desc: 'Outside glass, frames, and sills.' },
+      { id: 'interior', label: 'Interior Only',        price: 'from $100', icon: 'bi-house-door', desc: 'Inside glass and interior sill wipe-down.' },
+      { id: 'both',     label: 'Interior & Exterior',  price: 'from $150', icon: 'bi-stars',      desc: 'Full inside-and-out. Best value.' },
+    ];
 
-    <div class="d-flex flex-wrap gap-2 justify-content-center position-relative" style="z-index:1">
-      <span class="skill-tag" style="color:#cb95fd;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3)">Service Design</span>
-      <span class="skill-tag" style="color:#cb95fd;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3)">HTML / CSS</span>
-      <span class="skill-tag" style="color:#cb95fd;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3)">Bootstrap 5</span>
-      <span class="skill-tag" style="color:#cb95fd;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3)">Visual Hierarchy</span>
-    </div>
-  </div>
+    const STORIES = ['1 storey', '2 storeys', '3+ storeys'];
+    const TIMES   = ['Morning (8 am – 12 pm)', 'Afternoon (12 pm – 5 pm)'];
+    const TODAY   = new Date().toISOString().split('T')[0];
+
+    const parseFsa = raw => raw.trim().toUpperCase().replace(/\s/g, '').slice(0, 3);
+
+    /* --- Navbar ----------------------------------------- */
+
+    function Nav({ areaRef, bookRef }) {
+      const scroll = ref => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return (
+        <nav className="navbar navbar-expand-lg navbar-light bg-white border-bottom fixed-top">
+          <div className="container" style={{ maxWidth: 900 }}>
+            <span className="navbar-brand cp-brand text-dark fs-5">
+              <i className="bi bi-droplet-half me-2" style={{ color: 'var(--accent)' }} />
+              ClearPane
+            </span>
+            <button
+              className="navbar-toggler"
+              type="button"
+              data-bs-toggle="collapse"
+              data-bs-target="#cpNav"
+              aria-controls="cpNav"
+              aria-expanded="false"
+              aria-label="Toggle navigation"
+            >
+              <span className="navbar-toggler-icon" />
+            </button>
+            <div className="collapse navbar-collapse justify-content-end" id="cpNav">
+              <ul className="navbar-nav gap-2 align-items-lg-center">
+                <li className="nav-item">
+                  <button className="btn btn-link nav-link text-secondary p-0 px-2" onClick={() => scroll(areaRef)}>
+                    Service Area
+                  </button>
+                </li>
+                <li className="nav-item">
+                  <button className="btn btn-link nav-link text-secondary p-0 px-2" onClick={() => scroll(bookRef)}>
+                    Book
+                  </button>
+                </li>
+                <li className="nav-item ms-lg-2">
+                  <a className="btn btn-sm btn-outline-secondary" href="index.html">
+                    <i className="bi bi-arrow-left me-1" />Portfolio
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </nav>
+      );
+    }
+
+    /* --- Hero ----------------------------------------- */
+
+    function Hero({ areaRef, bookRef }) {
+      const scroll = ref => ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return (
+        <section className="border-bottom">
+          <div className="container py-5" style={{ maxWidth: 900 }}>
+            <div className="py-4">
+              <p className="section-eyebrow mb-3">
+                <i className="bi bi-geo-alt-fill me-1" />Ottawa, Ontario
+              </p>
+              <h1 className="display-4 fw-bold text-dark mb-3 section-title">
+                Spotless windows,<br />every time.
+              </h1>
+              <p className="lead text-muted mb-5" style={{ maxWidth: 500 }}>
+                Residential window cleaning across central Ottawa.
+                Simple booking, reliable service, no hidden fees.
+              </p>
+              <div className="d-flex gap-3 flex-wrap">
+                <button className="btn btn-dark" onClick={() => scroll(bookRef)}>
+                  Book a Cleaning
+                </button>
+                <button className="btn btn-outline-secondary" onClick={() => scroll(areaRef)}>
+                  Check My Area
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* --- Services ----------------------------------------- */
+
+    function Services() {
+      return (
+        <section className="border-bottom">
+          <div className="container py-5" style={{ maxWidth: 900 }}>
+            <div className="py-2">
+              <p className="section-eyebrow mb-2">What We Offer</p>
+              <h2 className="fw-bold text-dark mb-1 section-title">Simple, transparent pricing</h2>
+              <p className="text-muted mb-4">
+                Exact price depends on window count and number of storeys.
+                We confirm your quote by phone before any work begins.
+              </p>
+              <div className="row g-4">
+                {SERVICES.map(s => (
+                  <div key={s.id} className="col-md-4">
+                    <div className="card h-100 border bg-white shadow-sm">
+                      <div className="card-body p-4">
+                        <div className="icon-accent mb-3"><i className={`bi ${s.icon}`} /></div>
+                        <h5 className="fw-bold text-dark mb-1 section-title">{s.label}</h5>
+                        <p className="fw-semibold small mb-2" style={{ color: 'var(--accent)' }}>{s.price}</p>
+                        <p className="text-muted small mb-0">{s.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* --- Area Checker ---------------------------------- */
+
+    function AreaChecker({ sectionRef, bookRef }) {
+      const [input,  setInput]  = useState('');
+      const [result, setResult] = useState(null);
+
+      const scrollToBook = () => bookRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+      const check = () => {
+        const fsa = parseFsa(input);
+        if (fsa.length < 3) { setResult('invalid'); return; }
+        setResult(COVERED_SET.has(fsa) ? 'covered' : 'uncovered');
+      };
+
+      return (
+        <section ref={sectionRef} className="border-bottom">
+          <div className="container py-5" style={{ maxWidth: 900 }}>
+            <div className="py-2">
+              <p className="section-eyebrow mb-2">Service Area</p>
+              <h2 className="fw-bold text-dark mb-1 section-title">Do we service your area?</h2>
+              <p className="text-muted mb-4">
+                Enter the first three characters of your postal code to find out.
+              </p>
+
+              <div className="d-flex gap-2 mb-4" style={{ maxWidth: 420 }}>
+                <input
+                  id="postal-check"
+                  type="text"
+                  className="form-control"
+                  placeholder="e.g. K1S"
+                  maxLength={7}
+                  value={input}
+                  onChange={e => { setInput(e.target.value); setResult(null); }}
+                  onKeyDown={e => e.key === 'Enter' && check()}
+                  aria-label="First three characters of your postal code"
+                />
+                <button className="btn btn-dark flex-shrink-0" onClick={check}>
+                  Check
+                </button>
+              </div>
+
+              {result === 'covered' && (
+                <div className="banner-ok d-flex align-items-center gap-2 mb-4" style={{ maxWidth: 420 }} role="status">
+                  <i className="bi bi-check-circle-fill flex-shrink-0" />
+                  <span>
+                    We service your area.{' '}
+                    <button
+                      className="btn btn-link p-0 fw-semibold text-success"
+                      style={{ fontSize: 'inherit', verticalAlign: 'baseline' }}
+                      onClick={scrollToBook}
+                    >
+                      Book now →
+                    </button>
+                  </span>
+                </div>
+              )}
+
+              {result === 'uncovered' && (
+                <div className="banner-no d-flex align-items-center gap-2 mb-4" style={{ maxWidth: 420 }} role="status">
+                  <i className="bi bi-x-circle-fill flex-shrink-0" />
+                  <span>We don't currently service that area. Check back as we expand.</span>
+                </div>
+              )}
+
+              {result === 'invalid' && (
+                <div className="banner-warn d-flex align-items-center gap-2 mb-4" style={{ maxWidth: 420 }} role="status">
+                  <i className="bi bi-exclamation-circle-fill flex-shrink-0" />
+                  <span>Please enter at least 3 characters (e.g. <strong>K1S</strong>).</span>
+                </div>
+              )}
+
+              <p className="text-muted small fw-semibold mb-3">Currently servicing:</p>
+              <div className="d-flex flex-wrap gap-2">
+                {COVERED_AREAS.map(a => (
+                  <span key={a.fsa} className="area-pill">
+                    <span className="dot" aria-hidden="true" />
+                    {a.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* --- Booking Form -------------------------------------- */
+
+    const EMPTY_FORM = { name: '', phone: '', address: '', postal: '', service: '', stories: '', date: '', time: '', notes: '' };
+
+    function BookingForm({ sectionRef }) {
+      const [form,      setForm]      = useState(EMPTY_FORM);
+      const [errors,    setErrors]    = useState({});
+      const [submitted, setSubmitted] = useState(false);
+
+      const set = (k, v) => {
+        setForm(f => ({ ...f, [k]: v }));
+        setErrors(e => ({ ...e, [k]: undefined }));
+      };
+
+      const validate = () => {
+        const e = {};
+        if (!form.name.trim())    e.name    = 'Required.';
+        if (!form.address.trim()) e.address = 'Required.';
+        if (!form.postal.trim())  e.postal  = 'Required.';
+        if (!form.service)        e.service = 'Please select a service.';
+        if (!form.stories)        e.stories = 'Please select number of storeys.';
+        if (!form.date)           e.date    = 'Please pick a date.';
+        if (!form.time)           e.time    = 'Please pick a time slot.';
+        return e;
+      };
+
+      const submit = e => {
+        e.preventDefault();
+        const errs = validate();
+        if (Object.keys(errs).length) { setErrors(errs); return; }
+        setSubmitted(true);
+      };
+
+      if (submitted) {
+        const svc = SERVICES.find(s => s.id === form.service);
+        const dateStr = new Date(form.date + 'T12:00:00').toLocaleDateString('en-CA', {
+          weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+        });
+        return (
+          <section ref={sectionRef}>
+            <div className="container py-5" style={{ maxWidth: 900 }}>
+              <div className="py-2">
+                <div className="card border bg-white shadow-sm mx-auto" style={{ maxWidth: 500 }}>
+                  <div className="card-body p-5 text-center">
+                    <div className="confirm-circle">
+                      <i className="bi bi-check-lg text-success" style={{ fontSize: '1.8rem' }} aria-hidden="true" />
+                    </div>
+                    <h3 className="fw-bold text-dark mb-2 section-title">Booking Received</h3>
+                    <p className="text-muted mb-4 small">
+                      Thanks, <strong className="text-dark">{form.name}</strong>! We'll call to confirm your appointment and provide a final quote.
+                    </p>
+                    <div className="text-start mb-4">
+                      <div className="summary-row">
+                        <i className="bi bi-geo-alt" aria-hidden="true" />
+                        <span>{form.address}, {form.postal.toUpperCase()}, Ottawa ON</span>
+                      </div>
+                      <div className="summary-row">
+                        <i className="bi bi-calendar3" aria-hidden="true" />
+                        <span>{dateStr}</span>
+                      </div>
+                      <div className="summary-row">
+                        <i className="bi bi-clock" aria-hidden="true" />
+                        <span>{form.time}</span>
+                      </div>
+                      <div className="summary-row">
+                        <i className="bi bi-window" aria-hidden="true" />
+                        <span>{svc?.label} — {form.stories}</span>
+                      </div>
+                    </div>
+                    <button
+                      className="btn btn-outline-dark w-100"
+                      onClick={() => { setForm(EMPTY_FORM); setSubmitted(false); }}
+                    >
+                      Book Another Appointment
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        );
+      }
+
+      return (
+        <section ref={sectionRef}>
+          <div className="container py-5" style={{ maxWidth: 900 }}>
+            <div className="py-2">
+              <p className="section-eyebrow mb-2">Book</p>
+              <h2 className="fw-bold text-dark mb-1 section-title">Schedule a cleaning</h2>
+              <p className="text-muted mb-5">
+                We'll confirm your booking by phone within one business day.
+              </p>
+
+              <form onSubmit={submit} noValidate style={{ maxWidth: 600 }}>
+                <div className="row g-3">
+
+                  <div className="col-sm-6">
+                    <label htmlFor="f-name" className="form-label fw-semibold small">Full Name *</label>
+                    <input
+                      id="f-name" type="text"
+                      className={`form-control ${errors.name ? 'is-invalid' : ''}`}
+                      placeholder="Jane Smith"
+                      value={form.name} onChange={e => set('name', e.target.value)}
+                    />
+                    {errors.name && <div className="invalid-feedback">{errors.name}</div>}
+                  </div>
+
+                  <div className="col-sm-6">
+                    <label htmlFor="f-phone" className="form-label fw-semibold small">
+                      Phone <span className="fw-normal text-muted">(optional)</span>
+                    </label>
+                    <input
+                      id="f-phone" type="tel"
+                      className="form-control"
+                      placeholder="(613) 555-0000"
+                      value={form.phone} onChange={e => set('phone', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="col-sm-8">
+                    <label htmlFor="f-address" className="form-label fw-semibold small">Street Address *</label>
+                    <input
+                      id="f-address" type="text"
+                      className={`form-control ${errors.address ? 'is-invalid' : ''}`}
+                      placeholder="123 Elgin St"
+                      value={form.address} onChange={e => set('address', e.target.value)}
+                    />
+                    {errors.address && <div className="invalid-feedback">{errors.address}</div>}
+                  </div>
+
+                  <div className="col-sm-4">
+                    <label htmlFor="f-postal" className="form-label fw-semibold small">Postal Code *</label>
+                    <input
+                      id="f-postal" type="text"
+                      className={`form-control ${errors.postal ? 'is-invalid' : ''}`}
+                      placeholder="K1S 3G2" maxLength={7}
+                      value={form.postal} onChange={e => set('postal', e.target.value)}
+                    />
+                    {errors.postal && <div className="invalid-feedback">{errors.postal}</div>}
+                  </div>
+
+                  <div className="col-12">
+                    <p className="form-label fw-semibold small mb-2" id="svc-label">Service Type *</p>
+                    <div className="row g-2" role="group" aria-labelledby="svc-label">
+                      {SERVICES.map(s => (
+                        <div key={s.id} className="col-sm-4">
+                          <button
+                            type="button"
+                            className={`svc-btn ${form.service === s.id ? 'active' : ''}`}
+                            onClick={() => set('service', s.id)}
+                            aria-pressed={form.service === s.id}
+                          >
+                            <div className="fw-semibold small text-dark">{s.label}</div>
+                            <div className="small" style={{ color: 'var(--accent)', fontWeight: 600 }}>{s.price}</div>
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                    {errors.service && <div className="text-danger small mt-1" role="alert">{errors.service}</div>}
+                  </div>
+
+                  <div className="col-sm-4">
+                    <label htmlFor="f-stories" className="form-label fw-semibold small">Storeys *</label>
+                    <select
+                      id="f-stories"
+                      className={`form-select ${errors.stories ? 'is-invalid' : ''}`}
+                      value={form.stories} onChange={e => set('stories', e.target.value)}
+                    >
+                      <option value="">Select…</option>
+                      {STORIES.map(s => <option key={s} value={s}>{s}</option>)}
+                    </select>
+                    {errors.stories && <div className="invalid-feedback">{errors.stories}</div>}
+                  </div>
+
+                  <div className="col-sm-4">
+                    <label htmlFor="f-date" className="form-label fw-semibold small">Preferred Date *</label>
+                    <input
+                      id="f-date" type="date"
+                      className={`form-control ${errors.date ? 'is-invalid' : ''}`}
+                      min={TODAY}
+                      value={form.date} onChange={e => set('date', e.target.value)}
+                    />
+                    {errors.date && <div className="invalid-feedback">{errors.date}</div>}
+                  </div>
+
+                  <div className="col-sm-4">
+                    <label htmlFor="f-time" className="form-label fw-semibold small">Time Slot *</label>
+                    <select
+                      id="f-time"
+                      className={`form-select ${errors.time ? 'is-invalid' : ''}`}
+                      value={form.time} onChange={e => set('time', e.target.value)}
+                    >
+                      <option value="">Select…</option>
+                      {TIMES.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                    {errors.time && <div className="invalid-feedback">{errors.time}</div>}
+                  </div>
+
+                  <div className="col-12">
+                    <label htmlFor="f-notes" className="form-label fw-semibold small">
+                      Notes <span className="fw-normal text-muted">(optional)</span>
+                    </label>
+                    <textarea
+                      id="f-notes"
+                      className="form-control" rows={3}
+                      placeholder="Gate codes, pets, specific windows to focus on…"
+                      value={form.notes} onChange={e => set('notes', e.target.value)}
+                    />
+                  </div>
+
+                  <div className="col-12 pt-1">
+                    <button type="submit" className="btn btn-dark px-5">
+                      Request Booking
+                    </button>
+                    <p className="text-muted small mt-2 mb-0">
+                      <i className="bi bi-shield-check me-1" style={{ color: 'var(--accent)' }} aria-hidden="true" />
+                      We call to confirm before charging anything.
+                    </p>
+                  </div>
+
+                </div>
+              </form>
+            </div>
+          </div>
+        </section>
+      );
+    }
+
+    /* --- Footer --------------------------------------- */
+
+    function Footer() {
+      return (
+        <footer className="bg-white border-top py-4 mt-5">
+          <div className="container text-center text-muted small" style={{ maxWidth: 900 }}>
+            <span className="fw-semibold text-dark">ClearPane</span>
+            {' · '}Ottawa, ON
+            {' · '}
+            <a href="tel:+16135550183" className="text-muted text-decoration-none">(613) 555-0183</a>
+            {' · '}
+            <a href="mailto:hello@clearpane.ca" className="text-muted text-decoration-none">hello@clearpane.ca</a>
+            <div className="mt-2 text-secondary" style={{ fontSize: '0.8rem' }}>
+              Designed by <strong className="text-dark">Aidan Lam</strong>
+            </div>
+          </div>
+        </footer>
+      );
+    }
+
+    /* --- App ----------------------------------------- */
+
+    function App() {
+      const areaRef = useRef(null);
+      const bookRef = useRef(null);
+      const [isAltTheme, setIsAltTheme] = useState(false);
+
+      const toggleTheme = () => {
+        setIsAltTheme(!isAltTheme);
+        document.body.classList.toggle('alt-theme');
+      };
+
+      return (
+        <>
+          <button 
+            onClick={toggleTheme} 
+            className="btn btn-sm btn-warning fixed-bottom m-3" 
+            style={{ zIndex: 2000, right: 0, left: 'auto' }}
+          >
+            <i className="bi bi-palette me-1"></i> Switch Design Theme
+          </button>
+
+          <Nav areaRef={areaRef} bookRef={bookRef} />
+          <main>
+            <Hero areaRef={areaRef} bookRef={bookRef} />
+            <Services />
+            <AreaChecker sectionRef={areaRef} bookRef={bookRef} />
+            <BookingForm sectionRef={bookRef} />
+          </main>
+          <Footer />
+        </>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
