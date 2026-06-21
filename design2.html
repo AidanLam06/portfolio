@@ -9,6 +9,8 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { height: 100%; overflow: hidden; }
+
     :root {
       --bg:            #0d0d14;
       --surface:       #12121e;
@@ -46,7 +48,8 @@
       background: var(--bg);
       color: var(--text);
       font-family: 'Space Grotesk', sans-serif;
-      min-height: 100vh;
+      height: 100%;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -75,18 +78,19 @@
     }
 
     /* -- layout ---------------------------------- */
-    #root { width: 100%; display: flex; justify-content: center; }
+    #root { width: 100%; height: 100%; display: flex; justify-content: center; }
 
     .wrap {
-      min-height: 100vh;
+      height: 100vh;
       width: 100%;
-      max-width: 480px;
-      padding: 20px 16px;
+      max-width: min(860px, 96vw);
+      padding: 16px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 24px;
+      gap: 16px;
+      overflow: hidden;
     }
 
     /* -- static screens (idle / game-over) ------- */
@@ -185,7 +189,7 @@
       border-color: var(--accent-border);
     }
 
-    /* -- Game logo / title ----------------------- */
+    /* -- game logo / title ----------------------- */
     .game-logo {
       display: inline-flex;
       align-items: baseline;
@@ -203,7 +207,7 @@
     .game-logo .lg-name { color: var(--text);  font-size: .95rem; }
     .game-logo .lg-tag  { color: var(--accent); font-size: .95rem; }
 
-    /* Large variant — idle screen */
+    /* large variant - idle screen */
     .game-logo-lg {
       padding: 12px 28px;
       border-radius: 14px;
@@ -278,7 +282,7 @@
 
     /* -- grid ------------------------------------ */
     .grid {
-      width: 100%;
+      width: min(100%, calc(100vh - 200px));
       aspect-ratio: 1;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
