@@ -3,48 +3,653 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design 02 - Memory Game | Aidan Lam</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
+  <title>Design 02 – Sequence Memory | Aidan Lam</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <link href="css/style.css" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
   <style>
-    .cs-icon { background: rgba(25,135,84,0.15); border: 1px solid rgba(25,135,84,0.3); color: #2cb675; }
-    .cs-progress-fill { background: linear-gradient(90deg, #2cb675, #0f5132); }
-    .cs-back:hover { color: #2cb675; }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:            #0d0d14;
+      --surface:       #12121e;
+      --tile:          #1c1c2e;
+      --tile-h:        #252540;
+      --accent:        #2cb675;
+      --accent-g:      rgba(44, 182, 117, .55);
+      --accent-bg:     rgba(44, 182, 117, .08);
+      --accent-border: rgba(44, 182, 117, .22);
+      --wrong:         #ef4444;
+      --wrong-g:       rgba(239, 68, 68, .55);
+      --text:          #f0f4f8;
+      --muted:         #8892a4;
+      --border:        rgba(255, 255, 255, .05);
+    }
+
+    /* -- Neon / Synthwave theme ------------------ */
+    .t-neon {
+      --bg:            #07001c;
+      --surface:       #0d002e;
+      --tile:          #160040;
+      --tile-h:        #220060;
+      --accent:        #ff2d78;
+      --accent-g:      rgba(255, 45, 120, .65);
+      --accent-bg:     rgba(255, 45, 120, .08);
+      --accent-border: rgba(255, 45, 120, .3);
+      --wrong:         #ff7c00;
+      --wrong-g:       rgba(255, 124, 0, .65);
+      --text:          #f5eeff;
+      --muted:         #9b78cc;
+      --border:        rgba(180, 50, 255, .15);
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Grotesk', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* -- back button ----------------------------- */
+    .back {
+      position: fixed;
+      top: 16px; left: 20px;
+      z-index: 99;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      text-decoration: none;
+      font-size: .82rem;
+      font-weight: 600;
+      transition: color .15s, background .15s, border-color .15s;
+    }
+    .back:hover {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+    }
+
+    /* -- layout ---------------------------------- */
+    #root { width: 100%; display: flex; justify-content: center; }
+
+    .wrap {
+      min-height: 100vh;
+      width: 100%;
+      max-width: 480px;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    /* -- static screens (idle / game-over) ------- */
+    .screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 14px;
+      width: 100%;
+    }
+
+    .screen h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 8vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+    }
+
+    .screen p {
+      color: var(--muted);
+      font-size: .95rem;
+      line-height: 1.65;
+      max-width: 290px;
+    }
+
+    .score-num {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(4.5rem, 18vw, 7rem);
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .score-sub {
+      font-size: .7rem;
+      font-weight: 700;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-top: -6px;
+    }
+
+    .badge {
+      font-size: .82rem;
+      font-weight: 600;
+      padding: 5px 14px;
+      border-radius: 100px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+    }
+    .badge b { color: var(--accent); font-weight: 700; }
+
+    .btn-go {
+      margin-top: 4px;
+      padding: 13px 48px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 24px var(--accent-g);
+      transition: background .15s, transform .1s, box-shadow .15s;
+    }
+    .btn-go:hover {
+      filter: brightness(1.12);
+      box-shadow: 0 6px 32px var(--accent-g);
+      transform: translateY(-1px);
+    }
+    .btn-go:active { transform: translateY(0); }
+
+    /* -- theme toggle button --------------------- */
+    .theme-btn {
+      position: fixed;
+      top: 16px; right: 20px;
+      z-index: 99;
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 14px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color .15s, background .15s, border-color .15s;
+    }
+    .theme-btn:hover {
+      color: var(--accent);
+      background: var(--accent-bg);
+      border-color: var(--accent-border);
+    }
+
+    /* -- HUD ------------------------------------- */
+    .hud {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 4px;
+      min-height: 28px;
+    }
+
+    .hud-level {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .hud-level em { font-style: normal; color: var(--text); font-size: .92rem; }
+
+    .hud-status {
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .hud-best { font-size: .75rem; font-weight: 600; color: var(--muted); text-align: right; }
+    .hud-best b { color: var(--accent); font-weight: 700; }
+
+    /* -- grid ------------------------------------ */
+    .grid {
+      width: 100%;
+      aspect-ratio: 1;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding: 14px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .tile {
+      border-radius: 10px;
+      background: var(--tile);
+      border: 1px solid rgba(255,255,255,.04);
+      cursor: pointer;
+      transition: background .12s ease, box-shadow .12s ease, transform .1s ease;
+      aspect-ratio: 1;
+      outline: none;
+    }
+    .tile:hover:not(:disabled) { background: var(--tile-h); }
+    .tile:active:not(:disabled) { transform: scale(.91); }
+    .tile:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .tile:disabled { cursor: default; }
+
+    /* Figure-Ground: lit tile scales forward with glow */
+    .tile.lit {
+      background: var(--accent);
+      box-shadow:
+        0 0 0 2px var(--accent),
+        0 0 18px var(--accent-g),
+        0 0 40px rgba(44, 182, 117, .18);
+      transform: scale(1.07);
+      position: relative;
+      z-index: 2;
+    }
+
+    .tile.wrong {
+      background: var(--wrong);
+      box-shadow:
+        0 0 0 2px var(--wrong),
+        0 0 18px var(--wrong-g);
+      transform: scale(1.07);
+    }
+
+    /* -- progress bar ---------------------------- */
+    .prog-track {
+      width: 100%;
+      height: 3px;
+      border-radius: 99px;
+      background: rgba(255,255,255,.06);
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      transition: width .18s ease;
+    }
+
+    /* -- Neon theme overrides -------------------- */
+    .t-neon .grid {
+      border-color: rgba(180, 50, 255, .25);
+      box-shadow: 0 0 60px rgba(255, 45, 120, .06), 0 0 0 1px rgba(255, 45, 120, .08);
+    }
+
+    .t-neon .tile {
+      border-color: rgba(180, 50, 255, .1);
+    }
+
+    /* -- plasma gradient glow -------------------- */
+    .t-neon .tile.lit {
+      background: linear-gradient(135deg, #ff2d78 0%, #c400f5 100%);
+      box-shadow:
+        0 0 0 2px #ff2d78,
+        0 0 22px rgba(255, 45, 120, .85),
+        0 0 55px rgba(196, 0, 245, .45),
+        0 0 90px rgba(255, 45, 120, .15);
+    }
+
+    .t-neon .tile.wrong {
+      background: #ff7c00;
+      box-shadow: 0 0 0 2px #ff7c00, 0 0 22px rgba(255, 124, 0, .8);
+    }
+
+    .t-neon .prog-fill {
+      background: linear-gradient(90deg, #ff2d78, #c400f5);
+    }
+
+    .t-neon .screen h1 {
+      text-shadow: 0 0 40px rgba(255, 45, 120, .35), 0 0 80px rgba(196, 0, 245, .18);
+    }
+
+    .t-neon .score-num {
+      text-shadow: 0 0 50px rgba(255, 45, 120, .5), 0 0 100px rgba(196, 0, 245, .25);
+    }
+
+    /* -- animations ------------------------------ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp .38s cubic-bezier(.22,1,.36,1) both; }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(.82); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .pop-in { animation: popIn .32s cubic-bezier(.34,1.56,.64,1) both; }
+
+    @media (max-width: 420px) {
+      .grid { gap: 7px; padding: 10px; border-radius: 12px; }
+      .tile { border-radius: 7px; }
+    }
   </style>
 </head>
 <body>
-  <div class="coming-soon-page">
-    <a href="index.html" class="cs-back btn btn-ghost mb-5 position-relative" style="z-index:1">
-      <i class="bi bi-arrow-left me-1"></i> Back to Portfolio
-    </a>
 
-    <div class="cs-icon"><i class="bi bi-grid-3x3-gap-fill"></i></div>
+  <a href="index.html" class="back">
+    <i class="bi bi-arrow-left"></i> Portfolio
+  </a>
 
-    <p class="eyebrow justify-content-center position-relative" style="z-index:1;color:#2cb675">
-      <span class="eyebrow-dot" style="background:#2cb675"></span>DESIGN 02
-    </p>
+  <div id="root"></div>
 
-    <h1 class="cs-title">Memory Game</h1>
+  <!-- React 18 via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
 
-    <p class="cs-subtitle">
-      An interactive memory game - exploring game UI patterns, state management,
-      and engaging interaction design. Coming soon.
-    </p>
+  <script>
+  (function () {
+    'use strict';
 
-    <div class="cs-progress position-relative" style="z-index:1">
-      <div class="cs-progress-fill"></div>
-    </div>
+    var useState   = React.useState;
+    var useRef     = React.useRef;
+    var useEffect  = React.useEffect;
+    var e          = React.createElement;
 
-    <div class="d-flex flex-wrap gap-2 justify-content-center position-relative" style="z-index:1">
-      <span class="skill-tag" style="color:#2cb675;background:rgba(25,135,84,.15);border-color:rgba(25,135,84,.3)">Game UI</span>
-      <span class="skill-tag" style="color:#2cb675;background:rgba(25,135,84,.15);border-color:rgba(25,135,84,.3)">JavaScript</span>
-      <span class="skill-tag" style="color:#2cb675;background:rgba(25,135,84,.15);border-color:rgba(25,135,84,.3)">Interaction Design</span>
-      <span class="skill-tag" style="color:#2cb675;background:rgba(25,135,84,.15);border-color:rgba(25,135,84,.3)">Animations</span>
-    </div>
-  </div>
+    /* -- audio engine (16 tones using synth audio api) -- */
+    var FREQS = [
+      261.63, 293.66, 329.63, 369.99,
+      415.30, 466.16, 523.25, 587.33,
+      659.25, 739.99, 830.61, 932.33,
+      1046.50, 1174.66, 1318.51, 1479.98
+    ];
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    var audio = (function () {
+      var ctx = null;
+      function get() {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+      return {
+        tone: function (idx, dur) {
+          dur = dur || 0.3;
+          try {
+            var c    = get();
+            var osc  = c.createOscillator();
+            var gain = c.createGain();
+            osc.connect(gain);
+            gain.connect(c.destination);
+            osc.frequency.value = FREQS[idx];
+            osc.type = 'sine';
+            gain.gain.setValueAtTime(0, c.currentTime);
+            gain.gain.linearRampToValueAtTime(0.18, c.currentTime + 0.02);
+            gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+            osc.start(c.currentTime);
+            osc.stop(c.currentTime + dur + 0.05);
+          } catch (err) {}
+        },
+        error: function () {
+          try {
+            var c    = get();
+            var osc  = c.createOscillator();
+            var gain = c.createGain();
+            osc.connect(gain);
+            gain.connect(c.destination);
+            osc.frequency.value = 90;
+            osc.type = 'sawtooth';
+            gain.gain.setValueAtTime(0.22, c.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.45);
+            osc.start(c.currentTime);
+            osc.stop(c.currentTime + 0.5);
+          } catch (err) {}
+        }
+      };
+    })();
+
+    /* -- MemoryGame component -------------------------------------- */
+    function MemoryGame() {
+      /* render state */
+      var screenState    = useState('idle');
+      var screen         = screenState[0];
+      var setScreen      = screenState[1];
+
+      var levelState     = useState(1);
+      var level          = levelState[0];
+      var setLevel       = levelState[1];
+
+      var activeState    = useState(null);
+      var activeTile     = activeState[0];
+      var setActiveTile  = activeState[1];
+
+      var wrongState     = useState(null);
+      var wrongTile      = wrongState[0];
+      var setWrongTile   = wrongState[1];
+
+      var inputState     = useState(false);
+      var inputOn        = inputState[0];
+      var setInputOn     = inputState[1];
+
+      var hsState        = useState(0);
+      var highScore      = hsState[0];
+      var setHighScore   = hsState[1];
+
+      var msgState       = useState('');
+      var statusMsg      = msgState[0];
+      var setStatusMsg   = msgState[1];
+
+      var progState      = useState(0);
+      var progress       = progState[0];
+      var setProgress    = progState[1];
+
+      var seqLenState    = useState(1);
+      var seqLen         = seqLenState[0];
+      var setSeqLen      = seqLenState[1];
+
+      var themeState     = useState('default');
+      var theme          = themeState[0];
+      var setTheme       = themeState[1];
+
+      /* sync theme class onto <html> so CSS vars cascade everywhere */
+      useEffect(function () {
+        document.documentElement.classList.toggle('t-neon', theme === 'neon');
+      }, [theme]);
+
+      function toggleTheme() {
+        setTheme(function (t) { return t === 'default' ? 'neon' : 'default'; });
+      }
+
+      /* game state refs to avoid re-render delays */
+      var seqRef  = useRef([]);    // tile sequence
+      var progRef = useRef(0);     // position into sequence during input
+      var lvlRef  = useRef(1);     // current level number
+      var onRef   = useRef(false); // is input currently live?
+      var timers  = useRef([]);
+
+      function after(fn, ms) {
+        var id = setTimeout(fn, ms);
+        timers.current.push(id);
+      }
+
+      function clearAll() {
+        timers.current.forEach(function (id) { clearTimeout(id); });
+        timers.current = [];
+      }
+
+      useEffect(function () {
+        return function () { clearAll(); };
+      }, []);
+
+      function rand() { return Math.floor(Math.random() * 16); }
+
+      /* -- start / restart -- */
+      function startGame() {
+        clearAll();
+        var seq = [rand()];
+        seqRef.current  = seq;
+        progRef.current = 0;
+        lvlRef.current  = 1;
+        onRef.current   = false;
+        setLevel(1);
+        setProgress(0);
+        setSeqLen(1);
+        setActiveTile(null);
+        setWrongTile(null);
+        setStatusMsg('');
+        setInputOn(false);
+        setScreen('game');
+        runSeq(seq);
+      }
+
+      /* -- flash the sequence -- */
+      function runSeq(seq) {
+        onRef.current = false;
+        setInputOn(false);
+        setActiveTile(null);
+
+        var ms = 400;
+        seq.forEach(function (tile) {
+          after(function () { setActiveTile(tile); audio.tone(tile, 0.44); }, ms);
+          ms += 520;
+          after(function () { setActiveTile(null); }, ms);
+          ms += 230;
+        });
+
+        after(function () {
+          progRef.current = 0;
+          setProgress(0);
+          setStatusMsg('Your turn!');
+          onRef.current = true;
+          setInputOn(true);
+        }, ms + 80);
+      }
+
+      /* -- handle tile click -- */
+      function handleTile(idx) {
+        if (!onRef.current) return;
+
+        var seq      = seqRef.current;
+        var pos      = progRef.current;
+        var expected = seq[pos];
+
+        audio.tone(idx, 0.18);
+
+        /* wrong tile -> show red -> play error -> go to game over */
+        if (idx !== expected) {
+          onRef.current = false;
+          setInputOn(false);
+          setWrongTile(idx);
+          audio.error();
+          var score = lvlRef.current;
+          after(function () {
+            setHighScore(function (prev) { return Math.max(prev, score); });
+            setLevel(score);
+            setScreen('over');
+            setWrongTile(null);
+          }, 700);
+          return;
+        }
+
+        /* correct click */
+        var newProg = pos + 1;
+        progRef.current = newProg;
+        setProgress(newProg);
+
+        /* round complete -> advance level */
+        if (newProg === seq.length) {
+          onRef.current = false;
+          setInputOn(false);
+          setStatusMsg('');
+
+          var nextLevel = lvlRef.current + 1;
+          var nextSeq   = seq.concat([rand()]);
+          seqRef.current = nextSeq;
+          lvlRef.current = nextLevel;
+
+          after(function () {
+            setLevel(nextLevel);
+            setSeqLen(nextSeq.length);
+            setProgress(0);
+            runSeq(nextSeq);
+          }, 700);
+        }
+      }
+
+      /* -------------- render -------------- */
+
+      var themeBtn = e('button', {
+        className: 'theme-btn',
+        onClick: toggleTheme,
+        'aria-label': 'Toggle theme'
+      },
+        e('i', { className: theme === 'default' ? 'bi bi-lightning-charge-fill' : 'bi bi-circle-half' }),
+        theme === 'default' ? ' Neon' : ' Minimal'
+      );
+
+      if (screen === 'idle') {
+        return e('div', { className: 'wrap' },
+          themeBtn,
+          e('div', { className: 'screen fade-up' },
+            e('h1', null, 'Sequence Memory'),
+            e('p', null,
+              'A sequence of tiles will flash. Memorise the order, then tap ' +
+              'them back in the same order. One tile is added each round.'
+            ),
+            highScore > 0
+              ? e('div', { className: 'badge' }, 'Best this session: ', e('b', null, highScore))
+              : null,
+            e('button', { className: 'btn-go', onClick: startGame }, 'Start')
+          )
+        );
+      }
+
+      if (screen === 'over') {
+        return e('div', { className: 'wrap' },
+          themeBtn,
+          e('div', { className: 'screen pop-in' },
+            e('h1', null, 'Test Complete'),
+            e('div', { className: 'score-num' }, level),
+            e('div', { className: 'score-sub' }, 'Level Reached'),
+            highScore > 0
+              ? e('div', { className: 'badge' }, 'Best this session: ', e('b', null, highScore))
+              : null,
+            e('button', { className: 'btn-go', onClick: startGame }, 'Try Again')
+          )
+        );
+      }
+
+      /* active gameplay */
+      var pct   = seqLen > 0 ? (progress / seqLen) * 100 : 0;
+      var tiles = Array.from({ length: 16 }, function (_, i) {
+        var cls = 'tile';
+        if (activeTile === i) cls += ' lit';
+        if (wrongTile  === i) cls += ' wrong';
+        return e('button', {
+          key:       i,
+          className: cls,
+          onClick:   function () { handleTile(i); },
+          disabled:  !inputOn,
+          'aria-label': 'Tile ' + (i + 1)
+        });
+      });
+
+      return e('div', { className: 'wrap' },
+        themeBtn,
+        e('div', { className: 'hud' },
+          e('div', { className: 'hud-level' }, 'Level ', e('em', null, level)),
+          e('div', { className: 'hud-status' }, statusMsg),
+          highScore > 0
+            ? e('div', { className: 'hud-best' }, 'Best: ', e('b', null, highScore))
+            : e('div', null)
+        ),
+        e('div', { className: 'grid' }, tiles),
+        e('div', { className: 'prog-track' },
+          e('div', { className: 'prog-fill', style: { width: pct + '%' } })
+        )
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(e(MemoryGame, null));
+
+  })();
+  </script>
 </body>
 </html>
