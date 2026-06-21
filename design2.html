@@ -185,8 +185,44 @@
       border-color: var(--accent-border);
     }
 
+    /* -- Game logo / title ----------------------- */
+    .game-logo {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 1px;
+      padding: 7px 16px;
+      border-radius: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      letter-spacing: -.025em;
+      user-select: none;
+      transition: border-color .25s, box-shadow .25s;
+    }
+    .game-logo .lg-name { color: var(--text);  font-size: .95rem; }
+    .game-logo .lg-tag  { color: var(--accent); font-size: .95rem; }
+
+    /* Large variant — idle screen */
+    .game-logo-lg {
+      padding: 12px 28px;
+      border-radius: 14px;
+    }
+    .game-logo-lg .lg-name,
+    .game-logo-lg .lg-tag { font-size: clamp(1.6rem, 7vw, 2.2rem); }
+
+    /* Neon: purple-tinted border + pink glow on the tag */
+    .t-neon .game-logo {
+      border-color: rgba(180, 50, 255, .28);
+      box-shadow: 0 0 30px rgba(255, 45, 120, .05);
+    }
+    .t-neon .game-logo .lg-tag {
+      text-shadow: 0 0 18px rgba(255, 45, 120, .55), 0 0 40px rgba(196, 0, 245, .25);
+    }
+
     /* -- HUD ------------------------------------- */
     .hud {
+      position: relative;
       width: 100%;
       display: flex;
       align-items: center;
@@ -214,6 +250,31 @@
 
     .hud-best { font-size: .75rem; font-weight: 600; color: var(--muted); text-align: right; }
     .hud-best b { color: var(--accent); font-weight: 700; }
+
+    /* -- grid wrapper + floating status label ----- */
+    .grid-wrap {
+      position: relative;
+      width: 100%;
+    }
+
+    .grid-status {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 3;
+      white-space: nowrap;
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      pointer-events: none;
+    }
+
+    .t-neon .grid-status {
+      text-shadow: 0 0 12px var(--accent-g);
+    }
 
     /* -- grid ------------------------------------ */
     .grid {
@@ -584,11 +645,22 @@
         theme === 'default' ? ' Neon' : ' Minimal'
       );
 
+      /* Logo — small (game / game-over) and large (idle) */
+      var logoInner = [
+        e('span', { className: 'lg-name' }, 'Synapse'),
+        e('span', { className: 'lg-tag'  }, '4x4')
+      ];
+      var gameLogo   = e('div', { className: 'game-logo'    }, logoInner[0], logoInner[1]);
+      var gameLogoLg = e('div', { className: 'game-logo game-logo-lg' },
+        e('span', { className: 'lg-name' }, 'Synapse'),
+        e('span', { className: 'lg-tag'  }, '4x4')
+      );
+
       if (screen === 'idle') {
         return e('div', { className: 'wrap' },
           themeBtn,
           e('div', { className: 'screen fade-up' },
-            e('h1', null, 'Sequence Memory'),
+            gameLogoLg,
             e('p', null,
               'A sequence of tiles will flash. Memorise the order, then tap ' +
               'them back in the same order. One tile is added each round.'
@@ -605,6 +677,7 @@
         return e('div', { className: 'wrap' },
           themeBtn,
           e('div', { className: 'screen pop-in' },
+            gameLogo,
             e('h1', null, 'Test Complete'),
             e('div', { className: 'score-num' }, level),
             e('div', { className: 'score-sub' }, 'Level Reached'),
@@ -633,9 +706,10 @@
 
       return e('div', { className: 'wrap' },
         themeBtn,
+        gameLogo,
         e('div', { className: 'hud' },
           e('div', { className: 'hud-level' }, 'Level ', e('em', null, level)),
-          e('div', { className: 'hud-status' }, statusMsg),
+          statusMsg ? e('div', { className: 'grid-status' }, statusMsg) : null,
           highScore > 0
             ? e('div', { className: 'hud-best' }, 'Best: ', e('b', null, highScore))
             : e('div', null)
