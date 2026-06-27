@@ -166,6 +166,55 @@
     }
     .btn-go:active { transform: translateY(0); }
 
+    /* -- difficulty mode toggle ------------------ */
+    .mode-toggle {
+      display: flex;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 3px;
+      gap: 3px;
+    }
+
+    .mode-btn {
+      flex: 1;
+      padding: 9px 22px;
+      border-radius: 7px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: .85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+      transition: background .15s, color .15s, box-shadow .15s;
+    }
+    .mode-btn.active {
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 2px 10px var(--accent-g);
+    }
+    .mode-btn:not(.active):hover { color: var(--text); }
+
+    /* -- lives (beginner HUD) -------------------- */
+    .lives {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+    }
+    .lives i { font-size: .9rem; color: var(--accent); transition: color .2s, opacity .2s; }
+    .lives i.lost { color: var(--muted); opacity: .35; }
+
+    /* -- mode label (game-over screen) ----------- */
+    .mode-label {
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
     /* -- theme toggle button --------------------- */
     .theme-btn {
       position: fixed;
@@ -513,6 +562,14 @@
       var theme          = themeState[0];
       var setTheme       = themeState[1];
 
+      var modeState      = useState('beginner');
+      var mode           = modeState[0];
+      var setMode        = modeState[1];
+
+      var livesState     = useState(3);
+      var lives          = livesState[0];
+      var setLives       = livesState[1];
+
       /* sync theme class onto <html> so CSS vars cascade everywhere */
       useEffect(function () {
         document.documentElement.classList.toggle('t-neon', theme === 'neon');
@@ -523,11 +580,13 @@
       }
 
       /* game state refs to avoid re-render delays */
-      var seqRef  = useRef([]);    // tile sequence
-      var progRef = useRef(0);     // position into sequence during input
-      var lvlRef  = useRef(1);     // current level number
-      var onRef   = useRef(false); // is input currently live?
-      var timers  = useRef([]);
+      var seqRef   = useRef([]);       // tile sequence
+      var progRef  = useRef(0);        // position into sequence during input
+      var lvlRef   = useRef(1);        // current level number
+      var onRef    = useRef(false);    // is input currently live?
+      var modeRef  = useRef('beginner'); // mode locked at game start
+      var livesRef = useRef(3);        // remaining lives (beginner only)
+      var timers   = useRef([]);
 
       function after(fn, ms) {
         var id = setTimeout(fn, ms);
@@ -548,12 +607,16 @@
       /* -- start / restart -- */
       function startGame() {
         clearAll();
+        var startLives = mode === 'beginner' ? 3 : 1;
         var seq = [rand()];
-        seqRef.current  = seq;
-        progRef.current = 0;
-        lvlRef.current  = 1;
-        onRef.current   = false;
+        seqRef.current   = seq;
+        progRef.current  = 0;
+        lvlRef.current   = 1;
+        onRef.current    = false;
+        modeRef.current  = mode;
+        livesRef.current = startLives;
         setLevel(1);
+        setLives(startLives);
         setProgress(0);
         setSeqLen(1);
         setActiveTile(null);
@@ -597,19 +660,47 @@
 
         audio.tone(idx, 0.18);
 
-        /* wrong tile -> show red -> play error -> go to game over */
+        /* wrong tile */
         if (idx !== expected) {
           onRef.current = false;
           setInputOn(false);
           setWrongTile(idx);
           audio.error();
-          var score = lvlRef.current;
-          after(function () {
-            setHighScore(function (prev) { return Math.max(prev, score); });
-            setLevel(score);
-            setScreen('over');
-            setWrongTile(null);
-          }, 700);
+
+          if (modeRef.current === 'advanced') {
+            /* advanced: instant game over */
+            var scoreA = lvlRef.current;
+            after(function () {
+              setHighScore(function (prev) { return Math.max(prev, scoreA); });
+              setLevel(scoreA);
+              setScreen('over');
+              setWrongTile(null);
+            }, 700);
+          } else {
+            /* beginner: spend a life, replay if any remain */
+            var newLives = livesRef.current - 1;
+            livesRef.current = newLives;
+            setLives(newLives);
+
+            if (newLives <= 0) {
+              var scoreB = lvlRef.current;
+              after(function () {
+                setHighScore(function (prev) { return Math.max(prev, scoreB); });
+                setLevel(scoreB);
+                setScreen('over');
+                setWrongTile(null);
+              }, 700);
+            } else {
+              /* still have lives - reset progress and replay same sequence */
+              after(function () {
+                setWrongTile(null);
+                progRef.current = 0;
+                setProgress(0);
+                setStatusMsg('');
+                runSeq(seqRef.current);
+              }, 900);
+            }
+          }
           return;
         }
 
@@ -649,7 +740,7 @@
         theme === 'default' ? ' Neon' : ' Minimal'
       );
 
-      /* Logo — small (game / game-over) and large (idle) */
+      /* logo - small (game / game-over) and large (idle) */
       var logoInner = [
         e('span', { className: 'lg-name' }, 'Synapse'),
         e('span', { className: 'lg-tag'  }, '4x4')
@@ -665,9 +756,20 @@
           themeBtn,
           e('div', { className: 'screen fade-up' },
             gameLogoLg,
+            e('div', { className: 'mode-toggle' },
+              e('button', {
+                className: 'mode-btn' + (mode === 'beginner' ? ' active' : ''),
+                onClick: function () { setMode('beginner'); }
+              }, e('i', { className: 'bi bi-heart-fill' }), 'Beginner'),
+              e('button', {
+                className: 'mode-btn' + (mode === 'advanced' ? ' active' : ''),
+                onClick: function () { setMode('advanced'); }
+              }, e('i', { className: 'bi bi-lightning-charge-fill' }), 'Advanced')
+            ),
             e('p', null,
-              'A sequence of tiles will flash. Memorise the order, then tap ' +
-              'them back in the same order. One tile is added each round.'
+              mode === 'beginner'
+                ? 'You have 3 lives. A wrong tile costs one life and replays the sequence. Lose all three and it\'s over.'
+                : 'One chance only. One wrong tile ends the game immediately.'
             ),
             highScore > 0
               ? e('div', { className: 'badge' }, 'Best this session: ', e('b', null, highScore))
@@ -685,6 +787,9 @@
             e('h1', null, 'Test Complete'),
             e('div', { className: 'score-num' }, level),
             e('div', { className: 'score-sub' }, 'Level Reached'),
+            e('div', { className: 'mode-label' },
+              modeRef.current === 'beginner' ? '♥ Beginner Mode' : '⚡ Advanced Mode'
+            ),
             highScore > 0
               ? e('div', { className: 'badge' }, 'Best this session: ', e('b', null, highScore))
               : null,
@@ -714,9 +819,15 @@
         e('div', { className: 'hud' },
           e('div', { className: 'hud-level' }, 'Level ', e('em', null, level)),
           statusMsg ? e('div', { className: 'grid-status' }, statusMsg) : null,
-          highScore > 0
-            ? e('div', { className: 'hud-best' }, 'Best: ', e('b', null, highScore))
-            : e('div', null)
+          modeRef.current === 'beginner'
+            ? e('div', { className: 'lives' },
+                e('i', { className: 'bi bi-heart-fill' + (lives < 1 ? ' lost' : '') }),
+                e('i', { className: 'bi bi-heart-fill' + (lives < 2 ? ' lost' : '') }),
+                e('i', { className: 'bi bi-heart-fill' + (lives < 3 ? ' lost' : '') })
+              )
+            : highScore > 0
+              ? e('div', { className: 'hud-best' }, 'Best: ', e('b', null, highScore))
+              : e('div', null)
         ),
         e('div', { className: 'grid' }, tiles),
         e('div', { className: 'prog-track' },
