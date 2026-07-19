@@ -1,51 +1,645 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Design 04 - Analytics Dashboard | Aidan Lam</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700;800&family=Inter:wght@400;500&display=swap" rel="stylesheet" />
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-  <link href="css/style.css" rel="stylesheet" />
-  <style>
-    .cs-icon { background: rgba(13,202,240,0.15); border: 1px solid rgba(13,202,240,0.3); color: #7ed6e7; }
-    .cs-progress-fill { background: linear-gradient(90deg, #7ed6e7, #0a58ca); }
-    .cs-back:hover { color: #7ed6e7; }
-    .skill-tag { color: #7ed6e7; background: rgba(13,202,240,0.15); border: 1px solid rgba(13,202,240,0.3); }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Big Mac Index Dashboard</title>
+
+<style>
+/* ---- Fonts (system-stack fallback first, web fonts progressively enhance) ---- */
+@font-face {
+  font-family: 'Fraunces-fallback';
+  src: local('Georgia');
+}
+:root{
+  --ink:#b63838;
+  --panel:#fff1cd;
+  --panel-2:#EDE6D3;
+  --gold:#f3bc3a;
+  --gold-soft:#E4C878;
+  --teal:#1ee4c9;
+  --line:#D8CFB4;
+  --muted:#d3b051;
+  --font-display: 'Bricolage Grotesque', 'Fraunces', Georgia, serif;
+  --font-mono: 'DM Mono', Courier, monospace;
+  --font-body: 'Plus Jakarta Sans', 'Inter', sans-serif;
+}
+*{ box-sizing: border-box; }
+html,body{ margin:0; padding:0; background:var(--ink); }
+body{ font-family: var(--font-body); }
+.grain{
+  min-height:100vh;
+  background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.035) 1px, transparent 0);
+  background-size: 3px 3px;
+}
+::selection{ background: var(--gold-soft); color:#b63838; }
+select{ -webkit-appearance:none; appearance:none; }
+button{ font-family: inherit; cursor:pointer; }
+
+/* ---- Layout ---- */
+.page{ min-height:100vh; }
+.header{ max-width:72rem; margin:0 auto; padding: 40px 24px 24px; }
+.header-row{ display:flex; align-items:flex-start; justify-content:space-between; gap:24px; flex-wrap:wrap; }
+.eyebrow{ font-family: var(--font-mono); font-size:11px; letter-spacing:0.18em; text-transform:uppercase; color: var(--gold-soft); margin: 0 0 12px; }
+.title{ font-family: var(--font-display); font-weight:600; font-size: clamp(1.9rem, 4vw, 3rem); color: var(--panel); line-height:1.05; max-width:38rem; margin:0; }
+.subtitle{ font-size:14px; color: rgba(246,242,231,0.6); max-width:32rem; margin:12px 0 0; line-height:1.5; }
+
+/* ---- Language toggle ---- */
+.lang-toggle{
+  position:relative; display:flex; align-items:center; gap:4px;
+  font-family: var(--font-mono); font-size:12px; letter-spacing:0.03em;
+  background: var(--panel-2); border-radius:999px; padding:4px; border:1px solid var(--line);
+}
+.lang-opt{ padding:6px 14px; border-radius:999px; color: var(--muted); transition: all .2s ease; }
+.lang-opt.active{ background: var(--ink); color: var(--gold-soft); }
+
+/* ---- Ticker ---- */
+.ticker-wrap{ overflow:hidden; border-top:1px solid rgba(255,255,255,0.08); border-bottom:1px solid rgba(255,255,255,0.08); background:#8a2525; }
+.ticker-track{ display:flex; white-space:nowrap; padding:8px 0; width:max-content; animation: ticker 26s linear infinite; }
+.ticker-track:hover{ animation-play-state: paused; }
+@keyframes ticker{ 0%{ transform: translateX(0); } 100%{ transform: translateX(-50%); } }
+.ticker-item{ font-family: var(--font-mono); font-size:12px; color: var(--gold-soft); margin: 0 24px; display:flex; align-items:center; gap:8px; }
+.ticker-country{ color: rgba(255,255,255,0.4); }
+.ticker-price{ color:#fff; }
+
+/* ---- Grid / cards ---- */
+.grid{ max-width:72rem; margin:0 auto; padding:32px 24px; display:grid; grid-template-columns: repeat(3, 1fr); gap:24px; }
+.card{ background: var(--panel); border-radius:8px; padding:24px; box-shadow: 0 20px 40px -12px rgba(0,0,0,0.35); }
+.card-bar{ grid-column: span 2; }
+.card-stats{ background: var(--ink); border:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; justify-content:space-between; box-shadow:none; }
+.card-line{ grid-column: span 3; }
+.card-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:4px; gap:12px; }
+.card-head.wrap{ flex-wrap:wrap; align-items:center; gap:16px; }
+.card-title{ font-family: var(--font-display); font-weight:600; font-size:1.25rem; color: var(--ink); margin:0; }
+.card-sub{ font-family: var(--font-mono); font-size:11px; color: var(--muted); white-space:nowrap; }
+.chart-box{ height:288px; margin-top:16px; position:relative; }
+
+/* ---- Stats card ---- */
+.stat-block{ }
+.stat-label{ font-family: var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color: var(--muted); margin:0; }
+.stat-country{ font-family: var(--font-display); font-weight:600; font-size:1.4rem; color:#fff; margin:4px 0 0; }
+.stat-value{ font-family: var(--font-mono); font-size:14px; color:#fff; margin:2px 0 0; }
+.stat-value.gold{ color: var(--gold-soft); }
+.stat-value.teal{ color: var(--teal); }
+.stat-divider{ height:1px; background: rgba(255,255,255,0.08); margin:18px 0; }
+
+/* ---- Select ---- */
+.select-wrap{ display:flex; align-items:center; gap:12px; }
+.select-label{ font-family: var(--font-mono); font-size:11px; text-transform:uppercase; letter-spacing:0.12em; color: var(--muted); }
+.select-box{ position:relative; }
+.select{ font-family: var(--font-mono); font-size:13px; background: var(--panel-2); border:1px solid var(--line); border-radius:3px; padding:8px 30px 8px 12px; color: var(--ink); }
+.select:focus{ outline:2px solid var(--gold); outline-offset:1px; }
+.select-caret{ position:absolute; right:10px; top:50%; transform: translateY(-50%); color: var(--muted); font-size:11px; pointer-events:none; }
+
+/* ---- Change row ---- */
+.change-row{ display:flex; align-items:center; gap:8px; margin-top:12px; }
+.change-label{ font-family: var(--font-mono); font-size:11px; color: var(--muted); }
+.change-value{ font-family: var(--font-mono); font-size:14px; }
+.change-value.teal{ color: var(--teal); }
+.change-value.gold{ color: var(--gold); }
+
+/* ---- Footer ---- */
+.footer{ max-width:72rem; margin:0 auto; padding:8px 24px 40px; }
+.source{ font-family: var(--font-mono); font-size:11px; color: rgba(246,242,231,0.4); margin:0; }
+
+/* ---- Responsive ---- */
+@media (max-width: 900px){
+  .card-bar, .card-line, .card-stats{ grid-column: span 1; }
+  .grid{ grid-template-columns: 1fr; }
+}
+</style>
+
+<!-- Web fonts: progressive enhancement only. If blocked, system fonts above still render the full layout. -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Plus+Jakarta+Sans:wght@400;500;600&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=DM+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;600&family=Special+Elite&display=swap" rel="stylesheet">
+
+<!-- React + ReactDOM (production UMD builds via CDN) -->
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
 </head>
 <body>
-  <div class="coming-soon-page">
-    <a href="index.html" class="cs-back btn btn-ghost mb-5 position-relative" style="z-index:1">
-      <i class="bi bi-arrow-left me-1"></i> Back to Portfolio
-    </a>
+<div id="root"></div>
 
-    <div class="cs-icon"><i class="bi bi-bar-chart-line-fill"></i></div>
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
 
-    <p class="eyebrow justify-content-center position-relative" style="z-index:1;color:#7ed6e7">
-      <span class="eyebrow-dot" style="background:#7ed6e7"></span>DESIGN 04
-    </p>
+<!-- App (pre-compiled from JSX, no in-browser Babel needed) -->
+<script>
+const {
+  useState,
+  useMemo,
+  useRef,
+  useEffect
+} = React;
 
-    <h1 class="cs-title">Analytics Dashboard</h1>
+/* ---------------- Data ---------------- */
+const DATA = [{
+  country_en: "United States",
+  country_fr: "États-Unis",
+  current_price_usd: 6.12,
+  history: [{
+    year: 2022,
+    price: 5.15
+  }, {
+    year: 2023,
+    price: 5.58
+  }, {
+    year: 2024,
+    price: 5.69
+  }, {
+    year: 2025,
+    price: 6.01
+  }, {
+    year: 2026,
+    price: 6.12
+  }]
+}, {
+  country_en: "Canada",
+  country_fr: "Canada",
+  current_price_usd: 5.50,
+  history: [{
+    year: 2022,
+    price: 4.20
+  }, {
+    year: 2023,
+    price: 5.04
+  }, {
+    year: 2024,
+    price: 5.44
+  }, {
+    year: 2025,
+    price: 5.36
+  }, {
+    year: 2026,
+    price: 5.50
+  }]
+}, {
+  country_en: "United Kingdom",
+  country_fr: "Royaume-Uni",
+  current_price_usd: 7.11,
+  history: [{
+    year: 2022,
+    price: 4.96
+  }, {
+    year: 2023,
+    price: 5.63
+  }, {
+    year: 2024,
+    price: 6.17
+  }, {
+    year: 2025,
+    price: 6.84
+  }, {
+    year: 2026,
+    price: 7.11
+  }]
+}, {
+  country_en: "Switzerland",
+  country_fr: "Suisse",
+  current_price_usd: 9.05,
+  history: [{
+    year: 2022,
+    price: 8.05
+  }, {
+    year: 2023,
+    price: 8.30
+  }, {
+    year: 2024,
+    price: 8.80
+  }, {
+    year: 2025,
+    price: 8.92
+  }, {
+    year: 2026,
+    price: 9.05
+  }]
+}, {
+  country_en: "Japan",
+  country_fr: "Japon",
+  current_price_usd: 2.96,
+  history: [{
+    year: 2022,
+    price: 2.40
+  }, {
+    year: 2023,
+    price: 2.77
+  }, {
+    year: 2024,
+    price: 2.96
+  }, {
+    year: 2025,
+    price: 2.96
+  }, {
+    year: 2026,
+    price: 2.96
+  }]
+}];
 
-    <p class="cs-subtitle">
-      A data visualization dashboard - BI interface with charts, KPI metrics, and actionable
-      insights. Currently in development.
-    </p>
+/* ---------------- Copy ---------------- */
+const COPY = {
+  en: {
+    eyebrow: "Simplified Big Mac Index · 2022-2026",
+    title: "What a Big Mac costs, in five markets",
+    subtitle: "The price of a bigmac, in USD across five different countries. Says more about the purchasing power of a currency than any spreadsheet ever could.",
+    barTitle: "Current price by country",
+    barSub: "USD, 2026",
+    lineTitle: "Five-year price trend",
+    lineSub: "USD, 2022-2026",
+    selectLabel: "Country",
+    axisPrice: "Price (USD)",
+    axisYear: "Year",
+    tooltipPrice: "Price",
+    source: "Data Source: BigMacIndex.app",
+    highLabel: "Priciest",
+    lowLabel: "Cheapest",
+    spreadLabel: "Spread",
+    changeLabel: "5-yr change"
+  },
+  fr: {
+    eyebrow: "Indice Big Mac simplifié · 2022-2026",
+    title: "Le prix d'un Big Mac, dans cinq marchés",
+    subtitle: "Un seul burger, évalué de la même façon partout, en dit plus sur une monnaie qu'un tableau de taux de change.",
+    barTitle: "Prix actuel par pays",
+    barSub: "USD, 2026",
+    lineTitle: "Tendance sur cinq ans",
+    lineSub: "USD, 2022-2026",
+    selectLabel: "Pays",
+    axisPrice: "Prix (USD)",
+    axisYear: "Année",
+    tooltipPrice: "Prix",
+    source: "Source des données : BigMacIndex.app",
+    highLabel: "Le plus cher",
+    lowLabel: "Le moins cher",
+    spreadLabel: "Écart",
+    changeLabel: "Variation sur 5 ans"
+  }
+};
+const PALETTE = ["#C89A2E", "#3E8C82", "#B0563A", "#5A6FA6", "#8A8F98"];
+function fmtUSD(v) {
+  return "$" + v.toFixed(2);
+}
 
-    <div class="cs-progress position-relative" style="z-index:1">
-      <div class="cs-progress-fill"></div>
-    </div>
+/* ---------------- Chart.js helpers ---------------- */
+Chart.defaults.font.family = "'IBM Plex Mono', monospace";
+Chart.defaults.color = "#6B6455";
+function buildTooltip(priceWord) {
+  return {
+    enabled: true,
+    backgroundColor: "#953535",
+    titleColor: "#E4C878",
+    bodyColor: "#ffffff",
+    titleFont: {
+      family: "'IBM Plex Mono', monospace",
+      size: 11
+    },
+    bodyFont: {
+      family: "'IBM Plex Mono', monospace",
+      size: 12
+    },
+    padding: 10,
+    cornerRadius: 2,
+    displayColors: false,
+    callbacks: {
+      label: ctx => `${priceWord}: $${ctx.parsed.y.toFixed(2)}`
+    }
+  };
+}
+function BarChartCanvas({
+  data,
+  priceWord,
+  axisPrice
+}) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext("2d");
+    if (chartRef.current) chartRef.current.destroy();
+    chartRef.current = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels: data.map(d => d.name),
+        datasets: [{
+          data: data.map(d => d.price),
+          backgroundColor: data.map((_, i) => PALETTE[i % PALETTE.length]),
+          borderRadius: 3,
+          maxBarThickness: 54
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: buildTooltip(priceWord)
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: "#D8CFB4"
+            },
+            ticks: {
+              callback: v => "$" + v,
+              font: {
+                size: 11
+              }
+            },
+            title: {
+              display: true,
+              text: axisPrice,
+              font: {
+                size: 11
+              }
+            }
+          }
+        }
+      }
+    });
+    return () => chartRef.current && chartRef.current.destroy();
+  }, [data, priceWord, axisPrice]);
+  return /*#__PURE__*/React.createElement("canvas", {
+    ref: canvasRef,
+    role: "img",
+    "aria-label": "bar chart"
+  });
+}
+function LineChartCanvas({
+  data,
+  priceWord,
+  axisYear,
+  axisPrice
+}) {
+  const canvasRef = useRef(null);
+  const chartRef = useRef(null);
+  useEffect(() => {
+    const ctx = canvasRef.current.getContext("2d");
+    if (chartRef.current) chartRef.current.destroy();
+    chartRef.current = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: data.map(d => d.year),
+        datasets: [{
+          data: data.map(d => d.price),
+          borderColor: "#C89A2E",
+          backgroundColor: "rgba(200,154,46,0.12)",
+          borderWidth: 2.5,
+          pointRadius: 4,
+          pointBackgroundColor: "#C89A2E",
+          pointBorderWidth: 0,
+          pointHoverRadius: 6,
+          tension: 0.3,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false
+          },
+          tooltip: buildTooltip(priceWord)
+        },
+        scales: {
+          x: {
+            grid: {
+              display: false
+            },
+            ticks: {
+              font: {
+                size: 11
+              }
+            },
+            title: {
+              display: true,
+              text: axisYear,
+              font: {
+                size: 11
+              }
+            }
+          },
+          y: {
+            grid: {
+              color: "#D8CFB4"
+            },
+            ticks: {
+              callback: v => "$" + Number(v).toFixed(2),
+              font: {
+                size: 11
+              }
+            },
+            title: {
+              display: true,
+              text: axisPrice,
+              font: {
+                size: 11
+              }
+            }
+          }
+        }
+      }
+    });
+    return () => chartRef.current && chartRef.current.destroy();
+  }, [data, priceWord, axisYear, axisPrice]);
+  return /*#__PURE__*/React.createElement("canvas", {
+    ref: canvasRef,
+    role: "img",
+    "aria-label": "line chart"
+  });
+}
 
-    <div class="d-flex flex-wrap gap-2 justify-content-center position-relative" style="z-index:1">
-      <span class="skill-tag">Data Visualization</span>
-      <span class="skill-tag">Dashboard UX</span>
-      <span class="skill-tag">Charts & Graphs</span>
-      <span class="skill-tag">Bootstrap 5</span>
-    </div>
-  </div>
+/* ---------------- Language toggle ---------------- */
+function LangToggle({
+  lang,
+  setLang
+}) {
+  return /*#__PURE__*/React.createElement("button", {
+    onClick: () => setLang(lang === "en" ? "fr" : "en"),
+    className: "lang-toggle",
+    "aria-label": "Toggle language / Changer de langue"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "lang-opt" + (lang === "en" ? " active" : "")
+  }, "EN"), /*#__PURE__*/React.createElement("span", {
+    className: "lang-opt" + (lang === "fr" ? " active" : "")
+  }, "FR"));
+}
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+/* ---------------- Ticker strip ---------------- */
+// Each "half" is repeated enough times to be wider than any realistic
+// viewport on its own, so the track never runs out of content on the
+// right edge mid-scroll -- the loop only ever swaps one full-width half
+// for its identical twin, which is seamless.
+const TICKER_REPEATS = 6;
+function Ticker({
+  lang
+}) {
+  const half = Array.from({
+    length: TICKER_REPEATS
+  }, () => DATA).flat();
+  const items = [...half, ...half];
+  return /*#__PURE__*/React.createElement("div", {
+    className: "ticker-wrap"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "ticker-track"
+  }, items.map((d, i) => /*#__PURE__*/React.createElement("div", {
+    key: i,
+    className: "ticker-item"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "ticker-country"
+  }, lang === "en" ? d.country_en : d.country_fr), /*#__PURE__*/React.createElement("span", {
+    className: "ticker-price"
+  }, fmtUSD(d.current_price_usd))))));
+}
+
+/* ---------------- Main App ---------------- */
+function App() {
+  const [lang, setLang] = useState("en");
+  const [selectedIdx, setSelectedIdx] = useState(0);
+  const t = COPY[lang];
+  const barData = useMemo(() => DATA.map(d => ({
+    name: lang === "en" ? d.country_en : d.country_fr,
+    price: d.current_price_usd
+  })).sort((a, b) => b.price - a.price), [lang]);
+  const selected = DATA[selectedIdx];
+  const lineData = selected.history.map(h => ({
+    year: String(h.year),
+    price: h.price
+  }));
+  const stats = useMemo(() => {
+    const sorted = [...DATA].sort((a, b) => b.current_price_usd - a.current_price_usd);
+    const high = sorted[0];
+    const low = sorted[sorted.length - 1];
+    return {
+      high,
+      low,
+      spread: (high.current_price_usd - low.current_price_usd).toFixed(2)
+    };
+  }, []);
+  const change = (selected.history[selected.history.length - 1].price - selected.history[0].price).toFixed(2);
+  return /*#__PURE__*/React.createElement("div", {
+    className: "page"
+  }, /*#__PURE__*/React.createElement("header", {
+    className: "header"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "header-row"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("p", {
+    className: "eyebrow"
+  }, t.eyebrow), /*#__PURE__*/React.createElement("h1", {
+    className: "title"
+  }, t.title), /*#__PURE__*/React.createElement("p", {
+    className: "subtitle"
+  }, t.subtitle)), /*#__PURE__*/React.createElement(LangToggle, {
+    lang: lang,
+    setLang: setLang
+  }))), /*#__PURE__*/React.createElement(Ticker, {
+    lang: lang
+  }), /*#__PURE__*/React.createElement("main", {
+    className: "grid"
+  }, /*#__PURE__*/React.createElement("section", {
+    className: "card card-bar"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-head"
+  }, /*#__PURE__*/React.createElement("h2", {
+    className: "card-title"
+  }, t.barTitle), /*#__PURE__*/React.createElement("span", {
+    className: "card-sub"
+  }, t.barSub)), /*#__PURE__*/React.createElement("div", {
+    className: "chart-box"
+  }, /*#__PURE__*/React.createElement(BarChartCanvas, {
+    data: barData,
+    priceWord: t.tooltipPrice,
+    axisPrice: t.axisPrice
+  }))), /*#__PURE__*/React.createElement("section", {
+    className: "card card-stats"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "stat-block"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "stat-label"
+  }, t.highLabel), /*#__PURE__*/React.createElement("p", {
+    className: "stat-country"
+  }, lang === "en" ? stats.high.country_en : stats.high.country_fr), /*#__PURE__*/React.createElement("p", {
+    className: "stat-value gold"
+  }, fmtUSD(stats.high.current_price_usd))), /*#__PURE__*/React.createElement("div", {
+    className: "stat-divider"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "stat-block"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "stat-label"
+  }, t.lowLabel), /*#__PURE__*/React.createElement("p", {
+    className: "stat-country"
+  }, lang === "en" ? stats.low.country_en : stats.low.country_fr), /*#__PURE__*/React.createElement("p", {
+    className: "stat-value teal"
+  }, fmtUSD(stats.low.current_price_usd))), /*#__PURE__*/React.createElement("div", {
+    className: "stat-divider"
+  }), /*#__PURE__*/React.createElement("div", {
+    className: "stat-block"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "stat-label"
+  }, t.spreadLabel), /*#__PURE__*/React.createElement("p", {
+    className: "stat-value"
+  }, "$", stats.spread))), /*#__PURE__*/React.createElement("section", {
+    className: "card card-line"
+  }, /*#__PURE__*/React.createElement("div", {
+    className: "card-head wrap"
+  }, /*#__PURE__*/React.createElement("div", null, /*#__PURE__*/React.createElement("h2", {
+    className: "card-title"
+  }, t.lineTitle), /*#__PURE__*/React.createElement("span", {
+    className: "card-sub"
+  }, t.lineSub)), /*#__PURE__*/React.createElement("div", {
+    className: "select-wrap"
+  }, /*#__PURE__*/React.createElement("label", {
+    htmlFor: "country-select",
+    className: "select-label"
+  }, t.selectLabel), /*#__PURE__*/React.createElement("div", {
+    className: "select-box"
+  }, /*#__PURE__*/React.createElement("select", {
+    id: "country-select",
+    value: selectedIdx,
+    onChange: e => setSelectedIdx(Number(e.target.value)),
+    className: "select"
+  }, DATA.map((d, i) => /*#__PURE__*/React.createElement("option", {
+    key: i,
+    value: i
+  }, lang === "en" ? d.country_en : d.country_fr))), /*#__PURE__*/React.createElement("span", {
+    className: "select-caret"
+  }, "▾")))), /*#__PURE__*/React.createElement("div", {
+    className: "change-row"
+  }, /*#__PURE__*/React.createElement("span", {
+    className: "change-label"
+  }, t.changeLabel, ":"), /*#__PURE__*/React.createElement("span", {
+    className: "change-value" + (change >= 0 ? " teal" : " gold")
+  }, change >= 0 ? "+" : "", change)), /*#__PURE__*/React.createElement("div", {
+    className: "chart-box"
+  }, /*#__PURE__*/React.createElement(LineChartCanvas, {
+    data: lineData,
+    priceWord: t.tooltipPrice,
+    axisYear: t.axisYear,
+    axisPrice: t.axisPrice
+  })))), /*#__PURE__*/React.createElement("footer", {
+    className: "footer"
+  }, /*#__PURE__*/React.createElement("p", {
+    className: "source"
+  }, t.source)));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(/*#__PURE__*/React.createElement(App, null));
+
+</script>
 </body>
 </html>
